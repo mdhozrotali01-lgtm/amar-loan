@@ -224,20 +224,21 @@
   <div class="search-box">
     <h3>লোন প্রোফাইল অনুসন্ধান</h3>
     <input type="text" id="loanIdInput" placeholder="একাউন্ট নং লিখুন (যেমন: 19632)">
-    <button type="button" id="searchSubmitBtn">🔍 অ্যাকাউন্ট দেখুন</button>
+    <!-- সরাসরি অনক্লিক ইভেন্ট দিয়ে বাটন ট্রিগার ফিক্স করা হয়েছে -->
+    <button type="button" onclick="themeFetchData()">🔍 অ্যাকাউন্ট দেখুন</button>
   </div>
   
   <div id="resultBox" class="result-area"></div>
 </div>
 
-<script>
-document.getElementById('searchSubmitBtn').addEventListener('click', function() {
+<script type="text/javascript">
+function themeFetchData() {
   var inputId = document.getElementById("loanIdInput").value.trim();
   if (inputId.indexOf('0') === 0) { inputId = inputId.replace(/^0+/, ''); }
   
   var resultBox = document.getElementById("resultBox");
   resultBox.style.display = "block";
-  resultBox.innerHTML = "<div style='text-align:center;font-weight:bold;'>🔄 গুগল শিট থেকে লাইভ তথ্য খোঁজা হচ্ছে...</div>";
+  resultBox.innerHTML = "<div style='text-align:center;font-weight:bold;color:black;'>🔄 গুগল শিট থেকে লাইভ তথ্য খোঁজা হচ্ছে...</div>";
   
   if (inputId === "") {
     resultBox.innerHTML = "<div style='color:red;text-align:center;font-weight:bold;'>⚠️ অনুগ্রহ করে অ্যাকাউন্ট নং লিখুন!</div>";
@@ -248,11 +249,12 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
   var url = "https://google.com" + sheetId + "/gviz/tq?tqx=out:json";
 
   fetch(url)
-    .then(res => res.text())
-    .then(data => {
+    .then(function(res) { return res.text(); })
+    .then(function(data) {
       var startIdx = data.indexOf('{');
       var endIdx = data.lastIndexOf('}');
-      var json = JSON.parse(data.substring(startIdx, endIdx + 1));
+      var jsonStr = data.substring(startIdx, endIdx + 1);
+      var json = JSON.parse(jsonStr);
       
       var cols = json.table.cols;
       var rows = json.table.rows;
@@ -315,7 +317,3 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
 
           var fixUrl = function(idx) {
             if (idx !== -1 && row[idx] && row[idx].v) return row[idx].v.toString().replace('/open?', '/uc?export=view&');
-            return '';
-          };
-
-          var imgLive = fixUrl(liveImgCol);
