@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>লোন প্রোফাইল অনুসন্ধান</title>
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+    }
+    .main-wrapper {
+      max-width: 480px;
+      margin: 20px auto;
+      padding: 25px 15px;
+      border: 5px dotted red;
+      border-radius: 15px;
+      background-color: #00ff22;
+      color: black;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .search-box {
+      text-align: center;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 2px solid #009933;
+    }
+    .search-box h3 {
+      color: #d11267;
+      margin: 0 0 8px 0;
+      font-size: 18px;
+    }
+    .search-box input {
+      width: 80%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 16px;
+      color: black;
+      background: white;
+      outline: none;
+    }
+    .search-box button {
+      background-color: #d11267;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      width: 85%;
+    }
+    .result-area {
+      display: none;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      color: black;
+    }
+    .logo-area {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      text-align: right;
+      line-height: 1.1;
+    }
+    .logo-area span.cat { font-size: 24px; }
+    .logo-area span.title {
+      background: black;
+      color: yellow;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .data-grid {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+    }
+    .left-info {
+      width: 63%;
+      line-height: 1.7;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .right-photos {
+      width: 34%;
+      text-align: center;
+      border: 2px dashed black;
+      padding: 4px;
+      background: rgba(0,0,0,0.03);
+      border-radius: 5px;
+    }
+    .photo-title {
+      font-size: 10px;
+      font-weight: bold;
+      display: block;
+      border-bottom: 1px solid black;
+      padding-bottom: 2px;
+      margin-bottom: 4px;
+    }
+    .img-box-main {
+      display: flex;
+      gap: 4px;
+      height: 75px;
+      margin-bottom: 4px;
+    }
+    .img-cell {
+      width: 50%;
+      border: 1px dashed black;
+      background: #eee;
+      font-size: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    .img-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .nid-double {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .nid-cell {
+      height: 36px;
+      border: 1px dashed black;
+      background: #eee;
+      font-size: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    .nid-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .witness-title {
+      font-size: 10px;
+      font-weight: bold;
+      display: block;
+      border-top: 1px solid black;
+      border-bottom: 1px solid black;
+      padding: 2px 0;
+      margin-bottom: 4px;
+    }
+    .witness-box {
+      display: flex;
+      gap: 4px;
+      height: 45px;
+    }
+    .progress-bar-container {
+      margin: 15px 0 10px 0;
+      background: #eee;
+      border-radius: 10px;
+      height: 14px;
+      width: 100%;
+      border: 1px solid #ccc;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      background-color: red;
+      height: 100%;
+      width: 0%;
+      transition: width 0.5s;
+    }
+    .progress-text {
+      position: absolute;
+      right: 5px;
+      top: -1px;
+      font-size: 11px;
+      color: black;
+      font-weight: bold;
+    }
+    .chukti-box {
+      background: rgba(0,0,0,0.04);
+      padding: 8px;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: bold;
+      text-align: justify;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .plan-list {
+      padding: 5px 0;
+      font-weight: bold;
+    }
+    .plan-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+      border-bottom: 1px dotted red;
+      padding-bottom: 3px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+  
+  <div class="logo-area">
+    <span class="cat">🐱</span><br>
+    <span class="title">Hozrot</span>
+  </div>
+
+  <div class="search-box">
+    <h3>লোন প্রোফাইল অনুসন্ধান</h3>
+    <input type="text" id="loanIdInput" placeholder="একাউন্ট নং লিখুন (যেমন: 19632)">
+    <button type="button" id="searchSubmitBtn">🔍 অ্যাকাউন্ট দেখুন</button>
+  </div>
+  
+  <div id="resultBox" class="result-area"></div>
+</div>
+
+<script>
+document.getElementById('searchSubmitBtn').addEventListener('click', function() {
+  var inputId = document.getElementById("loanIdInput").value.trim();
+  if (inputId.indexOf('0') === 0) { inputId = inputId.replace(/^0+/, ''); }
+  
+  var resultBox = document.getElementById("resultBox");
+  resultBox.style.display = "block";
+  resultBox.innerHTML = "<div style='text-align:center;font-weight:bold;'>🔄 গুগল শিট থেকে লাইভ তথ্য খোঁজা হচ্ছে...</div>";
+  
+  if (inputId === "") {
+    resultBox.innerHTML = "<div style='color:red;text-align:center;font-weight:bold;'>⚠️ অনুগ্রহ করে অ্যাকাউন্ট নং লিখুন!</div>";
+    return;
+  }
+  
+  var sheetId = "1kMK7UtatZBzvm87OxZmaoJz2FJzJ2KN6sqFXILjiv7Q";
+  var url = "https://google.com" + sheetId + "/gviz/tq?tqx=out:json";
+
+  fetch(url)
+    .then(res => res.text())
+    .then(data => {
+      var startIdx = data.indexOf('{');
+      var endIdx = data.lastIndexOf('}');
+      var json = JSON.parse(data.substring(startIdx, endIdx + 1));
+      
+      var cols = json.table.cols;
+      var rows = json.table.rows;
+      var found = false;
+      
+      var idCol=-1, nameCol=-1, dateCol=-1, liveImgCol=-1, nidFCol=-1, nidBCol=-1;
+      var imoCol=-1, fbCol=-1, amountCol=-1, feeCol=-1, interestCol=-1, totalReturnCol=-1;
+      var totalPaidCol=-1, chuktiCol=-1, wit1Col=-1, wit2Col=-1;
+
+      for (var c = 0; c < cols.length; c++) {
+        var label = cols[c].label ? cols[c].label.toString().trim().toLowerCase() : "";
+        if (label.indexOf("একাউন্ট") !== -1 || label.indexOf("account") !== -1) idCol = c;
+        else if (label.indexOf("নাম") !== -1) nameCol = c;
+        else if (label.indexOf("তারিখ") !== -1) dateCol = c;
+        else if (label.indexOf("ছবি") !== -1 && label.indexOf("আইডি") === -1 && label.indexOf("সাক্ষী") === -1) liveImgCol = c;
+        else if (label.indexOf("সামনে") !== -1) nidFCol = c;
+        else if (label.indexOf("পিছনে") !== -1) nidBCol = c;
+        else if (label.indexOf("ইমো") !== -1) imoCol = c;
+        else if (label.indexOf("ফেসবুক") !== -1) fbCol = c;
+        else if (label.indexOf("কত নিবেন") !== -1 || label.indexOf("লোন নিয়েছেন") !== -1) amountCol = c;
+        else if (label.indexOf("ফি") !== -1) feeCol = c;
+        else if (label.indexOf("লাভ") !== -1 || label.indexOf("ইন্টারেস্ট") !== -1) interestCol = c;
+        else if (label.indexOf("মোট পরিশোধ") !== -1) totalReturnCol = c;
+        else if (label.includes("পরিশোধ হয়েছে") || label.includes("পরিশোধ হয়েছে")) totalPaidCol = c;
+        else if (label.indexOf("কিসের জন্য") !== -1 || label.indexOf("চুক্তি") !== -1) chuktiCol = c;
+        else if (label.indexOf("প্রথম") !== -1 || label.indexOf("১ম") !== -1) wit1Col = c;
+        else if (label.indexOf("দ্বিতীয়") !== -1 || label.indexOf("দ্বীতিয়") !== -1 || label.indexOf("২য়") !== -1) wit2Col = c;
+      }
+
+      if (idCol === -1) idCol = cols.length - 1;
+
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i].c;
+        if (!row) continue;
+        
+        var rowId = (row[idCol] && row[idCol].v) ? row[idCol].v.toString().trim() : "";
+        if (rowId.indexOf('0') === 0) { rowId = rowId.replace(/^0+/, ''); }
+        
+        if (rowId === inputId || (row[cols.length-1] && row[cols.length-1].v.toString().trim() === inputId)) {
+          found = true;
+          
+          var date = (dateCol !== -1 && row[dateCol] && row[dateCol].v) ? row[dateCol].v : "N/A";
+          var name = (nameCol !== -1 && row[nameCol] && row[nameCol].v) ? row[nameCol].v : "N/A";
+          var imo = (imoCol !== -1 && row[imoCol] && row[imoCol].v) ? row[imoCol].v : "N/A";
+          var fb = (fbCol !== -1 && row[fbCol] && row[fbCol].v) ? row[fbCol].v : "";
+          var amount = (amountCol !== -1 && row[amountCol] && row[amountCol].v) ? row[amountCol].v : "0";
+          var fee = (feeCol !== -1 && row[feeCol] && row[feeCol].v) ? row[feeCol].v : "0";
+          var interest = (interestCol !== -1 && row[interestCol] && row[interestCol].v) ? row[interestCol].v : "0";
+          var totalReturn = (totalReturnCol !== -1 && row[totalReturnCol] && row[totalReturnCol].v) ? row[totalReturnCol].v : "0";
+          var totalPaid = (totalPaidCol !== -1 && row[totalPaidCol] && row[totalPaidCol].v) ? row[totalPaidCol].v : "0";
+          var chukti = (chuktiCol !== -1 && row[chuktiCol] && row[chuktiCol].v) ? row[chuktiCol].v : "N/A";
+
+          var pct = 0;
+          var tReturnNum = parseFloat(totalReturn) || 0;
+          var tPaidNum = parseFloat(totalPaid) || 0;
+          if (tReturnNum > 0) {
+            pct = Math.round((tPaidNum / tReturnNum) * 100);
+            if (pct > 100) pct = 100;
+          }
+
+          var fixUrl = function(idx) {
+            if (idx !== -1 && row[idx] && row[idx].v) return row[idx].v.toString().replace('/open?', '/uc?export=view&');
+            return '';
+          };
+
+          var imgLive = fixUrl(liveImgCol);
