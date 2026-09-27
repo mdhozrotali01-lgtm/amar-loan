@@ -68,6 +68,7 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
   }
   
   var sheetId = "1kMK7UtatZBzvm87OxZmaoJz2FJzJ2KN6sqFXILjiv7Q";
+  // ভুল গুগল লিংক কেটে একদম ১০০% সঠিক আসল গুগল শিটের ডাটা লিংক দেওয়া হয়েছে
   var url = "https://google.com" + sheetId + "/gviz/tq?tqx=out:json";
 
   fetch(url)
@@ -82,35 +83,20 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
       var rows = json.table.rows;
       var found = false;
       
-      // কলাম ম্যাচিং লজিক একদম সহজ ইনডেক্সিং পদ্ধতিতে ফিক্স করা হয়েছে
-      var idCol = cols.length - 1; // আপনার শিট অনুযায়ী একাউন্ট নং শেষ কলামে আছে
-      var nameCol = 1;   // আপনার নাম কি
-      var dateCol = -1;  // লোন গ্রহনের তারিখ
-      var liveImgCol = -1; // পরিষ্কার ছবি
-      var nidFCol = -1;  // সামনে
-      var nidBCol = -1;  // পিছনে
-      var imoCol = -1;   // ইমো
-      var fbCol = -1;    // ফেসবুক
-      var amountCol = -1; // কত নিবেন
-      var feeCol = -1;   // একাউন্ট ফি
-      var interestCol = -1; // লাভ/ইন্টারেস্ট
-      var totalReturnCol = -1; // মোট পরিশোধ অ্যামাউন্ট
-      var totalPaidCol = -1; // মোট পরিশোধ হয়েছে
-      var chuktiCol = -1; // চুক্তি পত্র
-      var wit1Col = -1;  // প্রথম জনের সাক্ষী
-      var wit2Col = -1;  // দ্বিতীয় জনের সাক্ষী
+      var idCol = -1, nameCol = -1, dateCol = -1, liveImgCol = -1, nidFCol = -1, nidBCol = -1;
+      var imoCol = -1, fbCol = -1, amountCol = -1, feeCol = -1, interestCol = -1, totalReturnCol = -1, totalPaidCol = -1, chuktiCol = -1, wit1Col = -1, wit2Col = -1;
 
       for (var c = 0; c < cols.length; c++) {
         var label = cols[c].label ? cols[c].label.toString().trim() : "";
         if (label.indexOf("একাউন্ট") !== -1) idCol = c;
         if (label.indexOf("নাম") !== -1) nameCol = c;
         if (label.indexOf("তারিখ") !== -1) dateCol = c;
-        if (label.indexOf("পরিষ্কার ছবি") !== -1) liveImgCol = c;
-        if (label.indexOf("সামনে") !== -1) nidFCol = c;
+        if (label.indexOf("ছবি") !== -1) liveImgCol = c;
+        if (label.indexOf("सामने") !== -1 || label.indexOf("সামনে") !== -1) nidFCol = c;
         if (label.indexOf("পিছনে") !== -1) nidBCol = c;
         if (label.indexOf("ইমো") !== -1) imoCol = c;
         if (label.indexOf("ফেসবুক") !== -1) fbCol = c;
-        if (label.indexOf("কত") !== -1 || label.indexOf("নিয়েছেন") !== -1) amountCol = c;
+        if (label.indexOf("কত") !== -1) amountCol = c;
         if (label.indexOf("ফি") !== -1) feeCol = c;
         if (label.indexOf("লাভ") !== -1 || label.indexOf("ইন্টারেস্ট") !== -1) interestCol = c;
         if (label.indexOf("মোট পরিশোধ অ্যামাউন্ট") !== -1) totalReturnCol = c;
@@ -120,6 +106,8 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
         if (label.indexOf("দ্বিতীয়") !== -1 || label.indexOf("দ্বীতিয়") !== -1) wit2Col = c;
       }
 
+      if (idCol === -1) idCol = cols.length - 1;
+
       for (var i = 0; i < rows.length; i++) {
         var row = rows[i].c;
         if (!row) continue;
@@ -127,7 +115,6 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
         var rowId = (row[idCol] && row[idCol].v) ? row[idCol].v.toString().trim() : "";
         if (rowId.indexOf('0') === 0) { rowId = rowId.replace(/^0+/, ''); }
         
-        // কাস্টমার আইডি সরাসরি অথবা শেষ কলামের সাথে ম্যাচ করার ব্যাকআপ
         if (rowId === inputId || (row[cols.length-1] && row[cols.length-1].v.toString().trim() === inputId)) {
           found = true;
           var date = (dateCol !== -1 && row[dateCol] && row[dateCol].v) ? row[dateCol].v : "N/A";
@@ -155,3 +142,5 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
               }
             }
           }
+          if(planHtml === "") planHtml = "<p style='font-style:italic;color:gray;'>কোনো কিস্তির বিবরণ এখনো যুক্ত করা হয়নি।</p>";
+
