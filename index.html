@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>লোন প্রোফাইল অনুসন্ধান</title>
   <style>
     body { background-color: #f0f2f5; font-family: Arial, sans-serif; margin: 0; padding: 10px; }
@@ -11,7 +11,7 @@
     .search-box h3 { color: #d11267; margin: 0 0 8px 0; font-size: 18px; }
     .search-box input { width: 80%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center; font-size: 16px; color: black; background: white; outline: none; }
     .search-box button { background-color: #d11267; color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 85%; }
-    .result-area { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 15px; color: black; }
+    .result-area { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 15px; color: black; text-align: left; }
     .logo-area { position: absolute; right: 15px; top: 10px; text-align: right; line-height: 1.1; }
     .logo-area span.cat { font-size: 24px; }
     .logo-area span.title { background: black; color: yellow; padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: bold; }
@@ -39,13 +39,13 @@
 
 <div class="main-wrapper">
   <div class="logo-area">
-    <span class="cat">🐱</span><br>
+    <span class="cat">🐱</span><br />
     <span class="title">Hozrot</span>
   </div>
 
   <div class="search-box">
     <h3>লোন প্রোফাইল অনুসন্ধান</h3>
-    <input type="text" id="loanIdInput" placeholder="একাউন্ট নং লিখুন (যেমন: 19632)">
+    <input type="text" id="loanIdInput" placeholder="একাউন্ট নং লিখুন (যেমন: 19632)" />
     <button type="button" id="searchSubmitBtn">🔍 অ্যাকাউন্ট দেখুন</button>
   </div>
   
@@ -53,6 +53,7 @@
 </div>
 
 <script type="text/javascript">
+//<![CDATA[
 document.getElementById('searchSubmitBtn').addEventListener('click', function() {
   var inputId = document.getElementById("loanIdInput").value.trim();
   if (inputId.indexOf('0') === 0) { inputId = inputId.replace(/^0+/, ''); }
@@ -72,41 +73,61 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
   fetch(url)
     .then(function(res) { return res.text(); })
     .then(function(data) {
-      var json = JSON.parse(data.substring(data.indexOf('{'), data.lastIndexOf('}') + 1));
+      var startIdx = data.indexOf('{');
+      var endIdx = data.lastIndexOf('}');
+      var jsonStr = data.substring(startIdx, endIdx + 1);
+      var json = JSON.parse(jsonStr);
+      
       var cols = json.table.cols;
       var rows = json.table.rows;
       var found = false;
       
-      var idCol=-1, nameCol=-1, dateCol=-1, liveImgCol=-1, nidFCol=-1, nidBCol=-1;
-      var imoCol=-1, fbCol=-1, amountCol=-1, feeCol=-1, interestCol=-1, totalReturnCol=-1, totalPaidCol=-1, chuktiCol=-1, wit1Col=-1, wit2Col=-1;
+      // কলাম ম্যাচিং লজিক একদম সহজ ইনডেক্সিং পদ্ধতিতে ফিক্স করা হয়েছে
+      var idCol = cols.length - 1; // আপনার শিট অনুযায়ী একাউন্ট নং শেষ কলামে আছে
+      var nameCol = 1;   // আপনার নাম কি
+      var dateCol = -1;  // লোন গ্রহনের তারিখ
+      var liveImgCol = -1; // পরিষ্কার ছবি
+      var nidFCol = -1;  // সামনে
+      var nidBCol = -1;  // পিছনে
+      var imoCol = -1;   // ইমো
+      var fbCol = -1;    // ফেসবুক
+      var amountCol = -1; // কত নিবেন
+      var feeCol = -1;   // একাউন্ট ফি
+      var interestCol = -1; // লাভ/ইন্টারেস্ট
+      var totalReturnCol = -1; // মোট পরিশোধ অ্যামাউন্ট
+      var totalPaidCol = -1; // মোট পরিশোধ হয়েছে
+      var chuktiCol = -1; // চুক্তি পত্র
+      var wit1Col = -1;  // প্রথম জনের সাক্ষী
+      var wit2Col = -1;  // দ্বিতীয় জনের সাক্ষী
 
       for (var c = 0; c < cols.length; c++) {
-        var label = cols[c].label ? cols[c].label.toString().trim().toLowerCase() : "";
-        if (label.indexOf("একাউন্ট") !== -1 || label.indexOf("account") !== -1) idCol = c;
-        else if (label.indexOf("নাম") !== -1) nameCol = c;
-        else if (label.indexOf("তারিখ") !== -1) dateCol = c;
-        else if (label.indexOf("ছবি") !== -1 && label.indexOf("আইডি") === -1 && label.indexOf("সাক্ষী") === -1) liveImgCol = c;
-        else if (label.indexOf("সামনে") !== -1) nidFCol = c;
-        else if (label.indexOf("পিছনে") !== -1) nidBCol = c;
-        else if (label.indexOf("ইমো") !== -1) imoCol = c;
-        else if (label.indexOf("ফেসবুক") !== -1) fbCol = c;
-        else if (label.indexOf("কত নিবেন") !== -1 || label.indexOf("লোন নিয়েছেন") !== -1) amountCol = c;
-        else if (label.indexOf("ফি") !== -1) feeCol = c;
-        else if (label.indexOf("লাভ") !== -1 || label.indexOf("ইন্টারেস্ট") !== -1) interestCol = c;
-        else if (label.indexOf("মোট পরিশোধ") !== -1) totalReturnCol = c;
-        else if (label.includes("পরিশোধ হয়েছে") || label.includes("পরিশোধ হয়েছে")) totalPaidCol = c;
-        else if (label.indexOf("কিসের জন্য") !== -1 || label.indexOf("চুক্তি") !== -1) chuktiCol = c;
-        else if (label.indexOf("প্রথম") !== -1 || label.indexOf("১ম") !== -1) wit1Col = c;
-        else if (label.indexOf("второй") || label.indexOf("second") || label.indexOf("второго") || label.indexOf("দ্বিতীয়") || label.indexOf("দ্বীতিয়") || label.indexOf("২য়") !== -1) wit2Col = c;
+        var label = cols[c].label ? cols[c].label.toString().trim() : "";
+        if (label.indexOf("একাউন্ট") !== -1) idCol = c;
+        if (label.indexOf("নাম") !== -1) nameCol = c;
+        if (label.indexOf("তারিখ") !== -1) dateCol = c;
+        if (label.indexOf("পরিষ্কার ছবি") !== -1) liveImgCol = c;
+        if (label.indexOf("সামনে") !== -1) nidFCol = c;
+        if (label.indexOf("পিছনে") !== -1) nidBCol = c;
+        if (label.indexOf("ইমো") !== -1) imoCol = c;
+        if (label.indexOf("ফেসবুক") !== -1) fbCol = c;
+        if (label.indexOf("কত") !== -1 || label.indexOf("নিয়েছেন") !== -1) amountCol = c;
+        if (label.indexOf("ফি") !== -1) feeCol = c;
+        if (label.indexOf("লাভ") !== -1 || label.indexOf("ইন্টারেস্ট") !== -1) interestCol = c;
+        if (label.indexOf("মোট পরিশোধ অ্যামাউন্ট") !== -1) totalReturnCol = c;
+        if (label.indexOf("মোট পরিশোধ হয়েছে") !== -1 || label.indexOf("পরিশোধ হয়েছে") !== -1) totalPaidCol = c;
+        if (label.indexOf("চুক্তি") !== -1 || label.indexOf("কিসের জন্য") !== -1) chuktiCol = c;
+        if (label.indexOf("প্রথম") !== -1) wit1Col = c;
+        if (label.indexOf("দ্বিতীয়") !== -1 || label.indexOf("দ্বীতিয়") !== -1) wit2Col = c;
       }
 
-      if (idCol === -1) idCol = cols.length - 1;
-
       for (var i = 0; i < rows.length; i++) {
-        var row = rows[i].c; if (!row) continue;
+        var row = rows[i].c;
+        if (!row) continue;
+        
         var rowId = (row[idCol] && row[idCol].v) ? row[idCol].v.toString().trim() : "";
         if (rowId.indexOf('0') === 0) { rowId = rowId.replace(/^0+/, ''); }
         
+        // কাস্টমার আইডি সরাসরি অথবা শেষ কলামের সাথে ম্যাচ করার ব্যাকআপ
         if (rowId === inputId || (row[cols.length-1] && row[cols.length-1].v.toString().trim() === inputId)) {
           found = true;
           var date = (dateCol !== -1 && row[dateCol] && row[dateCol].v) ? row[dateCol].v : "N/A";
@@ -134,5 +155,3 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
               }
             }
           }
-          if(planHtml === "") planHtml = "<p style='font-style:italic;color:gray;'>কোনো কিস্তির বিবরণ এখনো যুক্ত করা হয়নি।</p>";
-
