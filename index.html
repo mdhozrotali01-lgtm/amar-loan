@@ -53,8 +53,7 @@
 </div>
 
 <script type="text/javascript">
-//<![CDATA[
-document.getElementById('searchSubmitBtn').addEventListener('click', function() {
+document.getElementById('searchSubmitBtn').onclick = function() {
   var inputId = document.getElementById("loanIdInput").value.trim();
   if (inputId.indexOf('0') === 0) { inputId = inputId.replace(/^0+/, ''); }
   
@@ -68,7 +67,6 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
   }
   
   var sheetId = "1kMK7UtatZBzvm87OxZmaoJz2FJzJ2KN6sqFXILjiv7Q";
-  // ভুল গুগল লিংক কেটে একদম ১০০% সঠিক আসল গুগল শিটের ডাটা লিংক দেওয়া হয়েছে
   var url = "https://google.com" + sheetId + "/gviz/tq?tqx=out:json";
 
   fetch(url)
@@ -92,7 +90,7 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
         if (label.indexOf("নাম") !== -1) nameCol = c;
         if (label.indexOf("তারিখ") !== -1) dateCol = c;
         if (label.indexOf("ছবি") !== -1) liveImgCol = c;
-        if (label.indexOf("सामने") !== -1 || label.indexOf("সামনে") !== -1) nidFCol = c;
+        if (label.indexOf("সামনে") !== -1) nidFCol = c;
         if (label.indexOf("পিছনে") !== -1) nidBCol = c;
         if (label.indexOf("ইমো") !== -1) imoCol = c;
         if (label.indexOf("ফেসবুক") !== -1) fbCol = c;
@@ -103,7 +101,7 @@ document.getElementById('searchSubmitBtn').addEventListener('click', function() 
         if (label.indexOf("মোট পরিশোধ হয়েছে") !== -1 || label.indexOf("পরিশোধ হয়েছে") !== -1) totalPaidCol = c;
         if (label.indexOf("চুক্তি") !== -1 || label.indexOf("কিসের জন্য") !== -1) chuktiCol = c;
         if (label.indexOf("প্রথম") !== -1) wit1Col = c;
-        if (label.indexOf("দ্বিতীয়") !== -1 || label.indexOf("দ্বীতিয়") !== -1) wit2Col = c;
+        if (label.indexOf("icon") !== -1 || label.indexOf("দ্বিতীয়") !== -1 || label.indexOf("দ্বীতিয়") !== -1) wit2Col = c;
       }
 
       if (idCol === -1) idCol = cols.length - 1;
