@@ -66,9 +66,8 @@ document.getElementById('searchSubmitBtn').onclick = function() {
     return;
   }
   
-  var sheetId = "1kMK7UtatZBzvm87OxZmaoJz2FJzJ2KN6sqFXILjiv7Q";
-  var url = "https://google.com" + sheetId + "/gviz/tq?tqx=out:json";
-
+ var url = "https://google.com" + sheetId + "/gviz/tq?tqx=out:json";
+ 
   fetch(url)
     .then(function(res) { return res.text(); })
     .then(function(data) {
