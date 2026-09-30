@@ -1,145 +1,152 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>লোন প্রোফাইল অনুসন্ধান</title>
-  <style>
-    body { background-color: #f0f2f5; font-family: Arial, sans-serif; margin: 0; padding: 10px; }
-    .main-wrapper { max-width: 480px; margin: 20px auto; padding: 25px 15px; border: 5px dotted red; border-radius: 15px; background-color: #00ff22; color: black; box-sizing: border-box; position: relative; }
-    .search-box { text-align: center; background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 2px solid #009933; }
-    .search-box h3 { color: #d11267; margin: 0 0 8px 0; font-size: 18px; }
-    .search-box input { width: 80%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center; font-size: 16px; color: black; background: white; outline: none; }
-    .search-box button { background-color: #d11267; color: white; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 85%; }
-    .result-area { display: none; background: white; padding: 15px; border-radius: 8px; margin-top: 15px; color: black; text-align: left; }
-    .logo-area { position: absolute; right: 15px; top: 10px; text-align: right; line-height: 1.1; }
-    .logo-area span.cat { font-size: 24px; }
-    .logo-area span.title { background: black; color: yellow; padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: bold; }
-    .data-grid { display: flex; justify-content: space-between; margin-top: 25px; }
-    .left-info { width: 63%; line-height: 1.7; font-weight: bold; font-size: 14px; }
-    .right-photos { width: 34%; text-align: center; border: 2px dashed black; padding: 4px; background: rgba(0,0,0,0.03); border-radius: 5px; }
-    .photo-title { font-size: 10px; font-weight: bold; display: block; border-bottom: 1px solid black; padding-bottom: 2px; margin-bottom: 4px; }
-    .img-box-main { display: flex; gap: 4px; height: 75px; margin-bottom: 4px; }
-    .img-cell { width: 50%; border: 1px dashed black; background: #eee; font-size: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-    .img-cell img { width: 100%; height: 100%; object-fit: cover; }
-    .nid-double { width: 50%; display: flex; flex-direction: column; gap: 2px; }
-    .nid-cell { height: 36px; border: 1px dashed black; background: #eee; font-size: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-    .nid-cell img { width: 100%; height: 100%; object-fit: cover; }
-    .witness-title { font-size: 10px; font-weight: bold; display: block; border-top: 1px solid black; border-bottom: 1px solid black; padding: 2px 0; margin-bottom: 4px; }
-    .witness-box { display: flex; gap: 4px; height: 45px; }
-    .progress-bar-container { margin: 15px 0 10px 0; background: #eee; border-radius: 10px; height: 14px; width: 100%; border: 1px solid #ccc; position: relative; overflow: hidden; }
-    .progress-bar-fill { background-color: red; height: 100%; width: 0%; transition: width 0.5s; }
-    .progress-text { position: absolute; right: 5px; top: -1px; font-size: 11px; color: black; font-weight: bold; }
-    .chukti-box { background: rgba(0,0,0,0.04); padding: 8px; border-radius: 5px; font-size: 13px; font-weight: bold; text-align: justify; border: 1px solid rgba(0,0,0,0.1); }
-    .plan-list { padding: 5px 0; font-weight: bold; }
-    .plan-row { display: flex; justify-content: space-between; margin: 5px 0; border-bottom: 1px dotted red; padding-bottom: 3px; font-size: 14px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ডিজিটাল লোন প্রোফাইল কার্ড সার্চার</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .search-container { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; max-width: 500px; text-align: center; }
+        .search-container h2 { margin-bottom: 15px; color: #333; font-size: 20px; }
+        .search-box { display: flex; gap: 10px; }
+        input[type="text"] { flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; outline: none; }
+        input[type="text"]:focus { border-color: #00cc00; }
+        button { padding: 12px 24px; background: #00cc00; color: #fff; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #00aa00; }
+        .error-msg { color: red; margin-top: 10px; font-weight: bold; display: none; }
+        
+        /* লোন কার্ড ডিজাইন (হুবহু আপনার ছবির মতো) */
+        .loan-card { background-color: #00cc00; color: #fff; width: 100%; max-width: 450px; border: 8px dotted red; padding: 20px; position: relative; border-radius: 5px; display: none; box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
+        .info-row { margin-bottom: 8px; font-size: 16px; font-weight: bold; display: flex; align-items: center; }
+        .info-row span { color: #000; margin-right: 5px; }
+        .info-row span.bullet { color: red; margin-right: 8px; font-size: 20px; }
+        
+        /* ছবির গ্রিড সেকশন */
+        .photo-section { position: absolute; top: 20px; right: 20px; width: 130px; text-align: center; }
+        .logo-box { font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 5px; color: #000; }
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; border: 2px dashed #000; background: #00cc00; font-size: 11px; color: #000; font-weight: bold; }
+        .grid-header { grid-column: span 2; border-bottom: 2px dashed #000; padding: 4px 0; text-align: center; }
+        .grid-cell { border-bottom: 2px dashed #000; padding: 15px 2px; text-align: center; }
+        .grid-cell:nth-child(odd) { border-right: 2px dashed #000; }
+        .grid-footer { grid-column: span 2; padding: 4px 0; text-align: center; font-size: 10px; display: flex; justify-content: space-around; }
+        
+        /* প্রোগ্রেス বার */
+        .progress-container { background: #fff; height: 20px; width: 100%; margin: 20px 0; position: relative; border-radius: 2px; overflow: hidden; }
+        .progress-bar { background: #ff00ff; height: 100%; width: 0%; transition: width 0.5s; }
+        .progress-text { position: absolute; right: 5px; top: 0; color: #ff00ff; font-weight: bold; font-size: 14px; line-height: 20px; }
+        
+        /* কিস্তির প্ল্যান */
+        .installment-title { font-size: 18px; font-weight: bold; margin-top: 15px; margin-bottom: 10px; }
+        .installment-header { font-size: 15px; font-weight: bold; color: #000; margin-bottom: 10px; }
+        .months-list { display: flex; flex-direction: column; gap: 5px; }
+        .month-row { border-bottom: 4px dotted red; padding-bottom: 3px; font-weight: bold; font-size: 16px; }
+    </style>
 </head>
 <body>
 
-<div class="main-wrapper">
-  <div class="logo-area">
-    <span class="cat">🐱</span><br />
-    <span class="title">Hozrot</span>
-  </div>
+    <div class="search-container">
+        <h2>আপনার লোন অ্যাকাউন্ট নম্বর দিয়ে সার্চ করুন</h2>
+        <div class="search-box">
+            <input type="text" id="accountInput" placeholder="উদা: 1001">
+            <button onclick="searchLoan()">সার্চ করুন</button>
+        </div>
+        <div id="errorMsg" class="error-msg">অ্যাকাউন্ট নম্বরটি পাওয়া যায়নি!</div>
+    </div>
 
-  <div class="search-box">
-    <h3>লোন প্রোফাইল অনুসন্ধান</h3>
-    <input type="text" id="loanIdInput" placeholder="একাউন্ট নং লিখুন (যেমন: 19632)" />
-    <button type="button" id="searchSubmitBtn">🔍 অ্যাকাউন্ট দেখুন</button>
-  </div>
-  
-  <div id="resultBox" class="result-area"></div>
-</div>
+    <!-- লোন কার্ড বডি -->
+    <div id="loanCard" class="loan-card">
+        <!-- ছবির গ্রিড ডানপাশে -->
+        <div class="photo-section">
+            <div class="logo-box">🐱 Hozrot</div>
+            <div class="grid-container">
+                <div class="grid-header">গ্রাহকের ছবি / ID Card</div>
+                <div class="grid-cell" style="grid-row: span 2; display: flex; align-items: center; justify-content: center; border-right: 2px dashed #000;">live selfie</div>
+                <div class="grid-cell">সামনে</div>
+                <div class="grid-cell" style="border-bottom: none;">পিছনে</div>
+                <div class="grid-header" style="border-top: 2px dashed #000; border-bottom: none;">1ম জন / 2য় জন</div>
+                <div class="grid-footer" style="border-top: 2px dashed #000;">
+                    <div>সাক্ষী ছবি</div>
+                    <div style="border-left: 2px dashed #000; padding-left: 5px;">সাক্ষী ছবি</div>
+                </div>
+            </div>
+        </div>
 
-<script type="text/javascript">
-document.getElementById('searchSubmitBtn').onclick = function() {
-  var inputId = document.getElementById("loanIdInput").value.trim();
-  if (inputId.indexOf('0') === 0) { inputId = inputId.replace(/^0+/, ''); }
-  
-  var resultBox = document.getElementById("resultBox");
-  resultBox.style.display = "block";
-  resultBox.innerHTML = "<div style='text-align:center;font-weight:bold;color:black;'>🔄 গুগল শিট থেকে লাইভ তথ্য খোঁজা হচ্ছে...</div>";
-  
-  if (inputId === "") {
-    resultBox.innerHTML = "<div style='color:red;text-align:center;font-weight:bold;'>⚠️ অনুগ্রহ করে অ্যাকাউন্ট নং লিখুন!</div>";
-    return;
-  }
-  
-  var sheetId = "1kMK7UtatZBzvm87OxZmaoJz2FJzJ2KN6sqFXILjiv7Q";
-  // এখানে সঠিক লিংক ফিক্স করে দেওয়া হয়েছে যা সরাসরি আপনার গুগল শিটের ডাটা নিয়ে আসবে
-  var url = "https://google.com" + sheetId + "/gviz/tq?tqx=out:json";
+        <!-- বামপাশের তথ্যাদি -->
+        <div class="info-row"><span class="bullet">•</span><span>লোন গ্রহনের তারিখ :</span> <span id="dateVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>আপনার নাম :</span> <span id="nameVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>একাউন্ট নং :</span> <span id="accVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>imo ID নাম্বার :</span> <span id="imoVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>ID লিংক :</span> <span id="fbVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>লোন নিয়েছেন :</span> <span id="takenVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>একাউন্ট ফি :</span> <span id="feeVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>লাভ/ইন্টারেস্ট :</span> <span id="profitVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>মোট পরিশোধ অ্যামাউন্ট :</span> <span id="totalPayVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>ইন্টারেস্ট :</span> <span id="interestVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>মোট কিস্তি :</span> <span id="totalInstVal"></span></div>
+        <div class="info-row"><span class="bullet">•</span><span>মোট পরিশোধ হয়েছে :</span> <span id="paidVal"></span></div>
 
-  fetch(url)
-    .then(function(res) { return res.text(); })
-    .then(function(data) {
-      var startIdx = data.indexOf('{');
-      var endIdx = data.lastIndexOf('}');
-      var jsonStr = data.substring(startIdx, endIdx + 1);
-      var json = JSON.parse(jsonStr);
-      
-      var cols = json.table.cols;
-      var rows = json.table.rows;
-      var found = false;
-      
-      var idCol = -1, nameCol = -1, dateCol = -1, liveImgCol = -1, nidFCol = -1, nidBCol = -1;
-      var imoCol = -1, fbCol = -1, amountCol = -1, feeCol = -1, interestCol = -1, totalReturnCol = -1, totalPaidCol = -1, chuktiCol = -1, wit1Col = -1, wit2Col = -1;
+        <!-- প্রোগ্রেস বার -->
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+            <div id="progressText" class="progress-text">0%</div>
+        </div>
 
-      for (var c = 0; c < cols.length; c++) {
-        var label = cols[c].label ? cols[c].label.toString().trim() : "";
-        if (label.indexOf("একাউন্ট") !== -1) idCol = c;
-        if (label.indexOf("নাম") !== -1) nameCol = c;
-        if (label.indexOf("তারিখ") !== -1) dateCol = c;
-        if (label.indexOf("ছবি") !== -1) liveImgCol = c;
-        if (label.indexOf("সামনে") !== -1) nidFCol = c;
-        if (label.indexOf("پیছনে") !== -1 || label.indexOf("পিছনে") !== -1) nidBCol = c;
-        if (label.indexOf("ইমো") !== -1) imoCol = c;
-        if (label.indexOf("ফেসবুক") !== -1) fbCol = c;
-        if (label.indexOf("কত") !== -1) amountCol = c;
-        if (label.indexOf("ফি") !== -1) feeCol = c;
-        if (label.indexOf("লাভ") !== -1 || label.indexOf("ইন্টারেস্ট") !== -1) interestCol = c;
-        if (label.indexOf("মোট পরিশোধ অ্যামাউন্ট") !== -1) totalReturnCol = c;
-        if (label.indexOf("মোট পরিশোধ হয়েছে") !== -1 || label.indexOf("পরিশোধ হয়েছে") !== -1) totalPaidCol = c;
-        if (label.indexOf("চুক্তি") !== -1 || label.indexOf("কিসের জন্য") !== -1) chuktiCol = c;
-        if (label.indexOf("প্রথম") !== -1) wit1Col = c;
-        if (label.indexOf("icon") !== -1 || label.indexOf("icon") !== -1 || label.indexOf("দ্বিতীয়") !== -1 || label.indexOf("দ্বীতিয়") !== -1) wit2Col = c;
-      }
+        <div class="info-row"><span class="bullet">•</span><span>চুক্তি পত্র :</span> <span id="chuktiVal"></span></div>
 
-      if (idCol === -1) idCol = cols.length - 1;
-
-      for (var i = 0; i < rows.length; i++) {
-        var row = rows[i].c;
-        if (!row) continue;
+        <!-- কিস্তির প্ল্যান -->
+        <div class="installment-title">কিস্তির প্ল্যান :</div>
+        <div class="installment-header">তারিখ/মাস &nbsp; ৮আসল + ৮ইন্টারেস্ট = ৮মোট</div>
         
-        var rowId = (row[idCol] && row[idCol].v) ? row[idCol].v.toString().trim() : "";
-        if (rowId.indexOf('0') === 0) { rowId = rowId.replace(/^0+/, ''); }
-        
-        if (rowId === inputId || (row[cols.length-1] && row[cols.length-1].v.toString().trim() === inputId)) {
-          found = true;
-          var date = (dateCol !== -1 && row[dateCol] && row[dateCol].v) ? row[dateCol].v : "N/A";
-          var name = (nameCol !== -1 && row[nameCol] && row[nameCol].v) ? row[nameCol].v : "N/A";
-          var imo = (imoCol !== -1 && row[imoCol] && row[imoCol].v) ? row[imoCol].v : "N/A";
-          var fb = (fbCol !== -1 && row[fbCol] && row[fbCol].v) ? row[fbCol].v : "";
-          var amount = (amountCol !== -1 && row[amountCol] && row[amountCol].v) ? row[amountCol].v : "0";
-          var fee = (feeCol !== -1 && row[feeCol] && row[feeCol].v) ? row[feeCol].v : "0";
-          var interest = (interestCol !== -1 && row[interestCol] && row[interestCol].v) ? row[interestCol].v : "0";
-          var totalReturn = (totalReturnCol !== -1 && row[totalReturnCol] && row[totalReturnCol].v) ? row[totalReturnCol].v : "0";
-          var totalPaid = (totalPaidCol !== -1 && row[totalPaidCol] && row[totalPaidCol].v) ? row[totalPaidCol].v : "0";
-          var chukti = (chuktiCol !== -1 && row[chuktiCol] && row[chuktiCol].v) ? row[chuktiCol].v : "N/A";
+        <div class="months-list" id="monthsList">
+            <!-- জাভাস্ক্রিপ্ট দিয়ে মাসগুলো বসবে -->
+        </div>
+    </div>
 
-          var pct = 0, tReturnNum = parseFloat(totalReturn) || 0, tPaidNum = parseFloat(totalPaid) || 0;
-          if (tReturnNum > 0) { pct = Math.round((tPaidNum / tReturnNum) * 100); if (pct > 100) pct = 100; }
-
-          var fixUrl = function(idx) { return (idx !== -1 && row[idx] && row[idx].v) ? row[idx].v.toString().replace('/open?', '/uc?export=view&') : ''; };
-          var imgLive = fixUrl(liveImgCol), imgNidF = fixUrl(nidFCol), imgNidB = fixUrl(nidBCol), imgWit1 = fixUrl(wit1Col), imgWit2 = fixUrl(wit2Col);
-
-          var planHtml = "";
-          for (var k = 0; k < row.length; k++) {
-            if (k!==idCol && k!==nameCol && k!==dateCol && k!==liveImgCol && k!==nidFCol && k!==nidBCol && k!==imoCol && k!==fbCol && k!==amountCol && k!==feeCol && k!==interestCol && k!==totalReturnCol && k!==totalPaidCol && k!==chuktiCol && k!==wit1Col && k!==wit2Col && k !== 0) {
-              if (row[k] && row[k].v) {
-                planHtml += '<div class="plan-row"><span>• ' + cols[k].label + '</span> <span><b>' + row[k].v + '</b></span></div>';
-              }
+    <script>
+        // আপনার বন্ধুদের লোন ডেটাবেজ (এখানে নতুন নতুন ডেটা যোগ করতে পারবেন)
+        const loanData = {
+            "1001": {
+                date: "10/05/2026", name: "রহিম আলী", accNo: "1001", imo: "01712345678", fb: "://facebook.com",
+                taken: "৫০০০ ৳", fee: "২০০ ৳", profit: "৫০০ ৳", totalPay: "৫৫০০ ৳", interest: "১০%", totalInst: "৫ টি",
+                paid: "২৭৫০ ৳", progress: 50, chukti: "সম্পন্ন",
+                months: { Jan: "১০০০+১০০=১১০০", Feb: "১০০০+১০০=১১০০", Mar: "১০০০+১০০=১১০০", Apr: "১০০০+১০০=১১০০", May: "১০০০+১০০=১১০০" }
+            },
+            "1002": {
+                date: "15/06/2026", name: "কামাল হোসেন", accNo: "1002", imo: "01812345678", fb: "://facebook.com",
+                taken: "১০০০০ ৳", fee: "৪০০ ৳", profit: "১০০০ ৳", totalPay: "১১০০০ ৳", interest: "১০%", totalInst: "১১ টি",
+                paid: "০ ৳", progress: 0, chukti: "চলমান",
+                months: { Jan: "১০০০+১০০=১১০০", Feb: "১০০০+১০০=১১০০", Mar: "১০০০+১০০=১১০০", Apr: "১০০০+১০০=১১০০", May: "১০০০+১০০=১১০০", Jun: "১০০০+১০০=১১০০" }
             }
-          }
-          if(planHtml === "") planHtml = "<p style='font-style:italic;color:gray;'>কোনো কিস্তির বিবরণ এখনো যুক্ত করা হয়নি।</p>";
+        };
 
+        function searchLoan() {
+            const input = document.getElementById("accountInput").value.trim();
+            const card = document.getElementById("loanCard");
+            const error = document.getElementById("errorMsg");
+            
+            if (loanData[input]) {
+                const data = loanData[input];
+                error.style.display = "none";
+                
+                // ডেটা বসানো
+                document.getElementById("dateVal").innerText = data.date;
+                document.getElementById("nameVal").innerText = data.name;
+                document.getElementById("accVal").innerText = data.accNo;
+                document.getElementById("imoVal").innerText = data.imo;
+                document.getElementById("fbVal").innerText = data.fb;
+                document.getElementById("takenVal").innerText = data.taken;
+                document.getElementById("feeVal").innerText = data.fee;
+                document.getElementById("profitVal").innerText = data.profit;
+                document.getElementById("totalPayVal").innerText = data.totalPay;
+                document.getElementById("interestVal").innerText = data.interest;
+                document.getElementById("totalInstVal").innerText = data.totalInst;
+                document.getElementById("paidVal").innerText = data.paid;
+                document.getElementById("chuktiVal").innerText = data.chukti;
+                
+                // প্রোগ্রেস বার আপডেট
+                document.getElementById("progressBar").style.width = data.progress + "%";
+                document.getElementById("progressText").innerText = data.progress + "%";
+                document.getElementById("progressText").style.color = data.progress > 0 ? "#fff" : "#ff00ff";
+                
+                // কিস্তির মাসগুলো তৈরি
